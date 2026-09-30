@@ -12,7 +12,9 @@
       "bundleIdentifier": "com.atharvadhumal.noir",
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -51,6 +53,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "942982d9-9067-4251-ab28-2cbbbe7732eb"
+      }
     }
   }
 }
