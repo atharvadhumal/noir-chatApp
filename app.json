@@ -48,7 +48,10 @@
           "color": "#FFFFFF",
           "defaultChannel": "default"
         }
-      ]
+      ],
+      "expo-image",
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
