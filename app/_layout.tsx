@@ -5,6 +5,7 @@ import { SocketProvider } from "../contexts/socket-context";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../utils/query-client";
 import { useEffect, useState } from "react";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { Colors } from "../constants/colors";
 import { AppLoader } from "../components/Loader";
 import { usePushNotifications } from "../hooks/usePushNotifications";
@@ -13,14 +14,16 @@ const MIN_LOADER_MS = 900;
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <SocketProvider>
-          <StatusBar style="light" />
-          <Layout />
-        </SocketProvider>
-      </QueryClientProvider>
-    </AuthProvider>
+    <KeyboardProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <SocketProvider>
+            <StatusBar style="light" />
+            <Layout />
+          </SocketProvider>
+        </QueryClientProvider>
+      </AuthProvider>
+    </KeyboardProvider>
   );
 }
 

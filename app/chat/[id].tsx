@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -11,6 +9,13 @@ import {
   View,
 } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
+import { useHeaderHeight } from "expo-router/react-navigation";
+import {
+  KeyboardAvoidingView,
+  useReanimatedKeyboardAnimation,
+} from "react-native-keyboard-controller";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../../constants/colors";
 import { MessageBubble } from "../../components/MessageBubble";
@@ -37,6 +42,14 @@ export default function ChatThreadScreen() {
   const [typingUser, setTypingUser] = useState<string | null>(null);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<FlatList>(null);
+  const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
+  const { progress } = useReanimatedKeyboardAnimation();
+
+  // The keyboard already covers the home indicator / nav bar, so drop that inset while it's open.
+  const composerInsetStyle = useAnimatedStyle(() => ({
+    paddingBottom: 10 + insets.bottom * (1 - progress.value),
+  }));
 
   useEffect(() => {
     joinConversation(conversationId);
@@ -99,8 +112,8 @@ export default function ChatThreadScreen() {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
+        behavior="padding"
+        keyboardVerticalOffset={headerHeight}
       >
         {isLoading ? (
           <ScreenLoader />
@@ -138,13 +151,16 @@ export default function ChatThreadScreen() {
           />
         )}
 
-        <View style={styles.composer}>
+        <Animated.View style={[styles.composer, composerInsetStyle]}>
           <TextInput
             style={styles.input}
             placeholder="Message"
             placeholderTextColor={Colors.textMuted}
             value={text}
             onChangeText={onChangeText}
+            onFocus={() =>
+              setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 250)
+            }
             multiline
           />
           <Pressable
@@ -161,7 +177,7 @@ export default function ChatThreadScreen() {
               <Ionicons name="arrow-up" size={20} color={Colors.background} />
             )}
           </Pressable>
-        </View>
+        </Animated.View>
       </KeyboardAvoidingView>
     </View>
   );
@@ -193,7 +209,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     gap: 10,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
     backgroundColor: Colors.surface,
